@@ -11,7 +11,7 @@ attr_reader :asset
 
 def load_current_resource
   @asset = GithubCB::Asset.new(new_resource.repo, name: new_resource.name,
-    release: new_resource.release)
+    release: new_resource.release, host: new_resource.host)
 end
 
 action :download do

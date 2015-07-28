@@ -64,25 +64,18 @@ module GithubCB
     #
     # @option options [String] :owner
     # @option options [String] :group
-    def extract(target, options = {})
-      require 'archive'
+    def extract(run_context, target, options = {})
 
       if options[:force]
         FileUtils.rm_rf(target)
       end
 
-      Dir.mktmpdir do |tmpdir|
-        Dir.chdir(tmpdir) do
-          ::Archive.new(local_archive_path).extract
-        end
-
-        FileUtils.mkdir_p(target)
-        File.rename(Dir.glob("#{tmpdir}/**").first, target)
-      end
-
-      if options[:owner] || options[:group]
-        FileUtils.chown_R(options[:owner], options[:group], target)
-      end
+      archive = Chef::Resource::LibarchiveFile.new("#{repo}-#{version}", run_context)
+      archive.path(local_archive_path)
+      archive.owner(options[:owner])
+      archive.group(options[:group])
+      archive.extract_to(target)
+      run_context.resource_collection.insert(archive)
     end
 
     def local_archive_path
