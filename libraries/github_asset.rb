@@ -56,6 +56,10 @@ module GithubCB
 
       raise GithubCB::ReleaseNotFound, "release not found" if release.nil?
 
+      if name == 'tarball'
+        return release.tarball_url
+      end
+
       asset = release.rels[:assets].get.data.find do |asset|
         asset.name == name
       end
@@ -83,8 +87,11 @@ module GithubCB
       res = Net::HTTP::Proxy(proxy_uri.host, proxy_uri.port, p_user, p_pass).start(uri.hostname, uri.port, use_ssl: true) do |http|
         req                  = Net::HTTP::Get.new(uri.to_s)
         req['Authorization'] = "token #{options[:token]}" unless options[:token].nil?
-        req['Accept']        = "application/octet-stream"
-
+        if name == 'tarball'
+          req['Accept'] = "application/json"
+        else
+          req['Accept'] = "application/octet-stream"
+        end
         http.request(req)
       end
 
