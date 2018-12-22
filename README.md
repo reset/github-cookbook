@@ -23,6 +23,9 @@ Downloads an asset from a Github release
 - **owner** - owner of the downloaded asset on disk
 - **group** - group of the downloaded asset on disk
 - **force** - force downloading even if the asset already exists on disk
+- **retries** - number of times to retry download
+- **retry_delay** - number of seconds between attempts to download file
+- **checksum** - SHA-256 of file, if the checksum does not match, the file is not used
 
 ## HTTP proxy support
 

@@ -10,4 +10,5 @@ group :test do
   gem 'guard-spork', platforms: :ruby
   gem 'coolline'
   gem 'fuubar'
+  gem 'rspec-its'
 end

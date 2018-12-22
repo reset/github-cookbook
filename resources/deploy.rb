@@ -18,6 +18,9 @@ attribute :owner, kind_of: String
 attribute :group, kind_of: String
 attribute :shared_directories, kind_of: Array, default: [ "pids", "log" ]
 attribute :force, kind_of: [TrueClass, FalseClass], default: false
+attribute :retries, kind_of: Integer, default: 2
+attribute :retry_delay, kind_of: Integer, default: 1
+attribute :checksum, kind_of: String
 
 attribute :configure, kind_of: Proc
 attribute :before_migrate, kind_of: Proc

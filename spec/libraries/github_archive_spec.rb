@@ -37,7 +37,7 @@ describe GithubCB::Archive do
       target = File.join(Chef::Config[:file_cache_path],
         "github_deploy", "archives", "berkshelf-cookbook-master.tar.gz")
 
-      expect(File.exist?(target)).to be_true
+      expect(File.exist?(target)).to be_truthy
     end
   end
 
@@ -46,13 +46,13 @@ describe GithubCB::Archive do
       before { subject.download }
 
       it "returns true" do
-        expect(subject.downloaded?).to be_true
+        expect(subject.downloaded?).to be_truthy
       end
     end
 
     context "when it is not present on disk" do
       it "returns false" do
-        expect(subject.downloaded?).to be_false
+        expect(subject.downloaded?).to be_falsey
       end
     end
   end
@@ -63,7 +63,7 @@ describe GithubCB::Archive do
 
     it "extracts the contents of the archive into the target directory" do
       subject.extract(target)
-      expect(File.exist?(File.join(target, "metadata.rb"))).to be_true
+      expect(File.exist?(File.join(target, "metadata.rb"))).to be_truthy
     end
   end
 end

@@ -21,7 +21,8 @@ action :extract do
   unless !new_resource.force || archive.downloaded?
     Chef::Log.info "github_archive[#{new_resource.name}] downloading archive"
     archive.download(user: new_resource.github_user, token: new_resource.github_token,
-      force: new_resource.force)
+      force: new_resource.force, retries: new_resource.retries,
+      retry_delay: new_resource.retry_delay, checksum: new_resource.checksum)
     new_resource.updated_by_last_action(true)
   end
 

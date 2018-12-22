@@ -16,3 +16,5 @@ bin/*
 .kitchen/
 .kitchen.local.yml
 /tmp
+
+vendor/*

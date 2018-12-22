@@ -31,9 +31,23 @@ module GithubCB
       @host                = options[:host] ||= self.class.default_host
     end
 
+    # @param [String] filepath
+    def file_checksum filepath
+      Digest::SHA256.file(filepath.to_s).hexdigest
+    end
+
+    # @param [String] expected
+    # @param [String] actual
+    def valid_checksum? expected, actual
+      expected == actual
+    end
+
     # @option options [String] :user
     # @option options [String] :token
     # @option options [Boolean] :force
+    # @option options [Integer] :retries
+    # @option options [Integer] :retry_delay
+    # @option options [String] :checksum
     def download(options = {})
       if options[:force]
         FileUtils.rm_rf(local_archive_path)
@@ -45,12 +59,42 @@ module GithubCB
       open(download_uri, http_basic_authentication: [options[:user], options[:token]]) do |source|
         IO.copy_stream(source, file)
       end
+
+      unless options[:checksum].nil?
+        checksum = file_checksum(options[:path])
+        fail GithubCB::ChecksumMismatch.new(options[:checksum], checksum) unless valid_checksum? options[:checksum], checksum
+      end
+
+      true
     rescue OpenURI::HTTPError => ex
+      FileUtils.rm_rf(options[:path])
       case ex.message
       when /406 Not Acceptable/
         raise GithubCB::AuthenticationError
       else
-        raise ex
+        if options[:retries] <= 0
+          raise ex
+        else
+          options[:retries] -= 1
+          puts "Retrying Download"
+          if options[:retry_delay] > 0
+            sleep options[:retry_delay]
+          end
+          download options
+        end
+      end
+    rescue GithubCB::ChecksumMismatch => ex
+      FileUtils.rm_rf(options[:path])
+      puts "Failed Checksum, Retries left #{options[:retries]}"
+      if options[:retries] <= 0
+        fail ex
+      else
+        options[:retries] -= 1
+        puts "Retrying Download"
+        if options[:retry_delay] > 0
+          sleep options[:retry_delay]
+        end
+        download options
       end
     ensure
       file.close unless file.nil?

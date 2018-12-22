@@ -13,6 +13,16 @@ module GithubCB
     end
   end
 
+  class ChecksumMismatch < GHError
+    attr_reader :expected
+    attr_reader :actual
+    def initialize(expected="", actual="")
+      @expected = expected
+      @actual = actual
+      super("expected: #{expected}, actual: #{actual}")
+    end
+  end
+
   class ReleaseNotFound < GHError; end
   class AssetNotFound < GHError; end
 end

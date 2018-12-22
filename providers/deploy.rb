@@ -35,6 +35,9 @@ action :deploy do
     host         new_resource.host
     extract_to   new_resource.deploy_path
     force        @should_force
+    retries      new_resource.retries
+    retry_delay  new_resource.retry_delay
+    checksum     new_resource.checksum
 
     if @should_force
       action [ :delete, :extract ]

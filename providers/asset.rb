@@ -27,7 +27,8 @@ action :download do
 
   Chef::Log.info "github_asset[#{new_resource.name}] downloading asset"
   updated = asset.download(user: new_resource.github_user, token: new_resource.github_token,
-    force: new_resource.force, path: new_resource.asset_path)
+    force: new_resource.force, path: new_resource.asset_path, retries: new_resource.retries,
+    retry_delay: new_resource.retry_delay, checksum: new_resource.checksum)
   new_resource.updated_by_last_action(updated)
 end
 
